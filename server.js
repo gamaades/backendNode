@@ -1,4 +1,5 @@
 // Lo primero que hacemos para tener un server en NodeJS es cargar una librería para  montarlo. Express es una muy buena. --> npm i express
+require('dotenv').config()
 const express = require("express"); // La forma que tiene de traer módulos.
 const bodyParser = require("body-parser"); // es una extencion de express que nos permite trabajar con el body de la petición de forma más sencilla. esto se instala con npm i body-parser
 
@@ -22,7 +23,8 @@ router(app); // aca le pasamos el servidor de express que tenemos creado a nuest
 app.use("/app", express.static("public"));
 
 // Para que lo anterior viva temos que decirle donde va a escuchar, eligimos un puerto, como el 3000 quees muy usado en las apps de Node.
-app.listen(3000);
-console.log("la aplicacion está escuchando en http://localhost:3000");
+const port = process.env.PORT || 3000;
+app.listen(port);
+console.log(`la aplicacion está escuchando en http://localhost:`+port);
 // Con esto está listo el servidor de Node para que viva:
 //---> node server

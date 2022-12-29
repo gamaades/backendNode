@@ -8,7 +8,7 @@ exports.success = function (req, res, message, status) {
 } // si es estatus no viniera, tomara el 200 por default
 
 exports.error = function (req, res, message, status, details) {
-    console.error("\x1b[31m"+"[response error] " +details);
+    console.error("[response error] " + details);
     res.status(status || 500).send({"error": true,
                                     "codigo": status,
                                     "message": message,

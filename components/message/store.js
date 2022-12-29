@@ -15,9 +15,14 @@ function addMessage(message) {
     myMessage.save();
 }
 
-async function getMessage() {
+async function getMessage(filterUser) {
     // return list;
-    const messages = await Model.find();
+    // filtro por defecto
+    let filter = {};
+    if (filterUser !== null) {
+        filter = {user: filterUser}
+    }
+    const messages = await Model.find(filter);    
     return messages;
 }
 

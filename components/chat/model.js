@@ -5,22 +5,12 @@ const Schema = mongoose.Schema;
 
 // a traves de una objeto se definen todas las propiedades y los tipos que queramos tener
 const mySchema = new Schema({
-    chat: {
-        type: Schema.ObjectId,
-        ref: "Chat"
-    },
-    user: {
+    users: [{
         type: Schema.ObjectId,
         ref: "User"
-    },
-    message: {
-        type: String,
-        required: true,
-    },
-    date: Date,
-    file: String
+    }]
 });
 
-const model = mongoose.model("Message", mySchema);
+const model = mongoose.model("Chat", mySchema);
 module.exports = model;
 

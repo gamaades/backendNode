@@ -1,13 +1,20 @@
+const socket = require("../../socket").socket;
 const store = require("./store");
+const config = require("../../config");
 
-function addMessage(user, message) {
+function addMessage(chat, user, message, file) {
     return new Promise((resolve, reject) => {
-        if (!user || !message) {
+        if (!chat || !user || !message) {
             console.error("[messageController] No hay usuario o mensaje");
             reject("Los datos son incorrectos");
             return false;
         }
         
+        let fileUrl = "";
+        if (file) {
+            fileUrl = config.hots+":"+config.port+"/app/files/"+file.filename;
+        }
+
         if (message.length > 256) {
             console.error("[messageController] Largo del mensaje excede el màximo. Largo: " + message.length);
             reject("Largo del mensaje incorrecto");
@@ -15,12 +22,17 @@ function addMessage(user, message) {
         }
     
         const fullMessage = {
+            chat: chat,
             user: user,
             message: message,
-            date: new Date()
+            date: new Date(),
+            file: fileUrl
         }
 
         store.add(fullMessage);
+
+        socket.io.emit("message", fullMessage);
+
         resolve(fullMessage);
     });    
 }
@@ -43,7 +55,23 @@ function updateMessage(id, message) {
     })
 }
 
+function deleteMessage(id) {
+    return new Promise((resolve, reject) => {
+        if (!id) {
+            reject("Parametro invalido");
+            return false;
+        }
+        store.remove(id)
+            .then(() => {
+                resolve();
+            })
+            .catch(e => {
+                reject(e);
+            })
+    });
+}
+
 // asì exportamos las funciones que tenemos en un objeto
 module.exports = {
-    addMessage, getMessages, updateMessage
+    addMessage, getMessages, updateMessage, deleteMessage
 }

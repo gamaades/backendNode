@@ -1,11 +1,10 @@
 //mok es falcear la base de datos o un servicio para validar que todo funciona correctamente.
-const list = []; // Esto sirve para hacer pruebas antes de mandarlo a base de datos.
-const db = require("mongoose");
+//const list = []; // Esto sirve para hacer pruebas antes de mandarlo a base de datos.
+// const db = require("mongoose"); // esto se va a db.js
+const { populate } = require("./model");
 const Model = require("./model");
 
-db.Promise = global.Promise;
-db.set("strictQuery", false);
-db.connect(process.env.MONGODB_URL);
+
 // db.db("telegrom");
 // db.Collection("telegrom.platziBackEnd");
 
@@ -15,15 +14,23 @@ function addMessage(message) {
     myMessage.save();
 }
 
-async function getMessage(filterUser) {
-    // return list;
-    // filtro por defecto
-    let filter = {};
-    if (filterUser !== null) {
-        filter = {user: filterUser}
-    }
-    const messages = await Model.find(filter);    
-    return messages;
+function getMessage(filterUser) {
+    return new Promise((resolve, reject) => {
+        let filter = {};
+        if (filterUser !== null) {
+            filter = {user: filterUser}
+        }
+        Model.find(filter)
+            .populate("user")
+            .exec((error, populated) => {
+                if (error) {
+                    reject(error)
+                    return false;
+                }
+                resolve(populated);
+            })
+        //resolve(messages);
+    })
 }
 
 async function updateText(id, message) {
@@ -37,10 +44,17 @@ async function updateText(id, message) {
     return newMessage;
 }
 
+function removeMessage(id) {
+    // return Model.deleteOne({
+    //     _id: id
+    // });
+    return Model.findByIdAndDelete(id); // tambien se puede utlizar este metodo
+}
 module.exports = {
     add: addMessage,
     list: getMessage,
     updateText: updateText,
+    remove: removeMessage
     // get // para tomar un mensahe especifico
     // update // actualizar un mensaje especifico
     // delete // eliminar mensaje especifico
